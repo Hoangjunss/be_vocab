@@ -12,7 +12,10 @@ public interface VocabSetMapper {
 
     @Mapping(source = "createdBy.id", target = "createdBy")
     @Mapping(source = "createdBy.fullName", target = "createdByName")
+    @Mapping(source = "group.id", target = "groupId")
+    @Mapping(source = "group.name", target = "groupName")
     VocabSetResponse toResponse(VocabSet set);
+    
 
     void updateEntity(UpdateVocabSetRequest request, @MappingTarget VocabSet set);
 }

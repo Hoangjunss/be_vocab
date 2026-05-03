@@ -5,13 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class CreateVocabSetRequest {
+public class CreateGroupRequest {
     @NotBlank
-    private String title;
+    private String name;
     private String description;
     private Boolean isPublic = false;
-    private String groupId;
-    private String topic;
-    private Integer difficultyLevel = 1;
-    private String imageUrl;
 }

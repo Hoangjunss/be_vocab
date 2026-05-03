@@ -15,6 +15,8 @@ public class VocabSetResponse {
     private boolean isPublic;
     private String createdBy;   // user id or null
     private String createdByName;
+    private String groupId;
+    private String groupName;
     private String topic;
     private Integer difficultyLevel;
     private Integer wordCount;
