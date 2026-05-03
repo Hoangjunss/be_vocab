@@ -11,10 +11,7 @@ import com.toiec.demo.mapper.VocabCardMapper;
 import com.toiec.demo.mapper.VocabSetMapper;
 import com.toiec.demo.policy.SrsPolicy;
 import com.toiec.demo.policy.XpPolicy;
-import com.toiec.demo.repository.UserProfileRepository;
-import com.toiec.demo.repository.UserVocabProgressRepository;
-import com.toiec.demo.repository.VocabCardRepository;
-import com.toiec.demo.repository.VocabSetRepository;
+import com.toiec.demo.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
@@ -38,6 +35,7 @@ public class VocabularyServiceImpl implements VocabularyService {
     private final VocabCardRepository vocabCardRepository;
     private final UserVocabProgressRepository progressRepository;
     private final UserProfileRepository profileRepository;
+    private final GroupRepository groupRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final VocabSetMapper vocabSetMapper;
     private final VocabCardMapper vocabCardMapper;
@@ -47,8 +45,12 @@ public class VocabularyServiceImpl implements VocabularyService {
     @Transactional
     public VocabSetResponse createSet(CreateVocabSetRequest request, String userId) {
         VocabSet set = vocabSetMapper.toEntity(request);
-        User user = User.builder().id(userId).build(); // proxy
-        set.setCreatedBy(user);
+        set.setCreatedBy(User.builder().id(userId).build());
+        if (request.getGroupId() != null) {
+            Group group = groupRepository.findById(request.getGroupId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Group not found"));
+            set.setGroup(group);
+        }
         set = vocabSetRepository.save(set);
         return vocabSetMapper.toResponse(set);
     }

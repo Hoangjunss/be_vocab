@@ -39,4 +39,8 @@ public class VocabSet extends BaseEntity {
 
     @OneToMany(mappedBy = "vocabSet", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<VocabCard> cards = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_id")
+    private Group group;
 }
