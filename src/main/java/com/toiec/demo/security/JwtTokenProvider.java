@@ -26,7 +26,7 @@ public class JwtTokenProvider {
 
     public String generateAccessToken(User user) {
         return Jwts.builder()
-                .setSubject(user.getId())
+                .setSubject(user.getId().toString())
                 .claim("email", user.getEmail())
                 .claim("role", user.getRole())
                 .setIssuedAt(new Date())
@@ -37,7 +37,7 @@ public class JwtTokenProvider {
 
     public String generateRefreshToken(User user) {
         return Jwts.builder()
-                .setSubject(user.getId())
+                .setSubject(user.getId().toString())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + refreshExpiration))
                 .signWith(key(), SignatureAlgorithm.HS256)

@@ -14,6 +14,11 @@ public class XpPolicy {
     );
 
     public static int getXpForQuality(int quality) {
-        return QUALITY_XP.getOrDefault(quality, 0);
+        return switch (quality) {
+            case 4 -> 15;
+            case 3 -> 10;
+            case 2 -> 5;
+            default -> 0;
+        };
     }
 }
