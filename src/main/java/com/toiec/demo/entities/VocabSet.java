@@ -26,7 +26,7 @@ public class VocabSet extends BaseEntity {
     @JoinColumn(name = "created_by")
     private User createdBy;   // null for system sets
 
-    private String topic;
+
 
     @Column(name = "difficulty_level")
     private Integer difficultyLevel = 1;

@@ -21,6 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/vocab")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000")
 public class VocabularyController {
     private final VocabularyService vocabularyService;
 
