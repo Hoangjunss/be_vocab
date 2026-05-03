@@ -12,6 +12,8 @@ import com.toiec.demo.mapper.VocabSetMapper;
 import com.toiec.demo.policy.SrsPolicy;
 import com.toiec.demo.policy.XpPolicy;
 import com.toiec.demo.repository.*;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
@@ -25,6 +27,7 @@ import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,15 +42,19 @@ public class VocabularyServiceImpl implements VocabularyService {
     private final ApplicationEventPublisher eventPublisher;
     private final VocabSetMapper vocabSetMapper;
     private final VocabCardMapper vocabCardMapper;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     // ========== Set operations ==========
     @Override
     @Transactional
     public VocabSetResponse createSet(CreateVocabSetRequest request, String userId) {
         VocabSet set = vocabSetMapper.toEntity(request);
-        set.setCreatedBy(User.builder().id(userId).build());
+        // Lấy reference (proxy) của User để tránh query không cần thiết
+        User userRef = entityManager.getReference(User.class, userId);
+        set.setCreatedBy(userRef);
         if (request.getGroupId() != null) {
-            Group group = groupRepository.findById(request.getGroupId())
+            Group group = groupRepository.findById(UUID.fromString(request.getGroupId()))
                     .orElseThrow(() -> new ResourceNotFoundException("Group not found"));
             set.setGroup(group);
         }
@@ -68,13 +75,13 @@ public class VocabularyServiceImpl implements VocabularyService {
     @Transactional
     public void deleteSet(String setId, String userId) {
         VocabSet set = findSetByIdAndUser(setId, userId);
-        vocabCardRepository.deleteAllByVocabSetId(setId);
+        vocabCardRepository.deleteAllByVocabSetId(UUID.fromString(setId));
         vocabSetRepository.delete(set);
     }
 
     @Override
     public VocabSetResponse getSetById(String setId, String userId) {
-        VocabSet set = vocabSetRepository.findById(setId)
+        VocabSet set = vocabSetRepository.findById(UUID.fromString(setId))
                 .orElseThrow(() -> new ResourceNotFoundException("Set not found"));
         if (!set.isPublic() && !set.getCreatedBy().getId().equals(userId)) {
             throw new BusinessRuleException("You don't have permission to view this set");
@@ -97,7 +104,7 @@ public class VocabularyServiceImpl implements VocabularyService {
 
     @Override
     public Page<VocabSetResponse> getUserSets(String userId, Pageable pageable) {
-        return vocabSetRepository.findByCreatedById(userId, pageable)
+        return vocabSetRepository.findByCreatedById(UUID.fromString(userId), pageable)
                 .map(vocabSetMapper::toResponse);
     }
 
@@ -169,10 +176,10 @@ public class VocabularyServiceImpl implements VocabularyService {
     // ========== Flashcard learning ==========
     @Override
     public FlashcardSessionResponse getNextFlashcard(String userId, String setId) {
-        VocabSet set = vocabSetRepository.findById(setId)
+        VocabSet set = vocabSetRepository.findById(UUID.fromString(setId))
                 .orElseThrow(() -> new ResourceNotFoundException("Set not found"));
         // Get due cards for this user from this set
-        List<UserVocabProgress> dueProgress = progressRepository.findByUserIdAndNextReviewAtBefore(userId, OffsetDateTime.now(), Pageable.ofSize(20));
+        List<UserVocabProgress> dueProgress = progressRepository.findByUserIdAndNextReviewAtBefore(UUID.fromString(userId), OffsetDateTime.now(), Pageable.ofSize(20));
         VocabCard nextCard = null;
         UserVocabProgress progress = null;
         for (UserVocabProgress p : dueProgress) {
@@ -184,9 +191,9 @@ public class VocabularyServiceImpl implements VocabularyService {
         }
         if (nextCard == null) {
             // pick first card from set that hasn't been reviewed
-            List<VocabCard> cards = vocabCardRepository.findByVocabSetId(setId);
+            List<VocabCard> cards = vocabCardRepository.findByVocabSetId(UUID.fromString(setId));
             for (VocabCard card : cards) {
-                var progOpt = progressRepository.findByUserIdAndCardId(userId, card.getId());
+                var progOpt = progressRepository.findByUserIdAndCardId(UUID.fromString(userId), card.getId());
                 if (progOpt.isEmpty() || progOpt.get().getNextReviewAt().isBefore(OffsetDateTime.now())) {
                     nextCard = card;
                     progress = progOpt.orElse(null);
@@ -197,10 +204,10 @@ public class VocabularyServiceImpl implements VocabularyService {
         if (nextCard == null) {
             throw new BusinessRuleException("No cards to review in this set today!");
         }
-        long reviewedCount = progressRepository.countByUserIdAndSrsLevelGreaterThanEqual(userId, 1);
-        long dueCount = progressRepository.countByUserIdAndNextReviewAtBefore(userId, OffsetDateTime.now());
+        long reviewedCount = progressRepository.countByUserIdAndSrsLevelGreaterThanEqual(UUID.fromString(userId), 1);
+        long dueCount = progressRepository.countByUserIdAndNextReviewAtBefore(UUID.fromString(userId), OffsetDateTime.now());
         return FlashcardSessionResponse.builder()
-                .cardId(nextCard.getId())
+                .cardId(nextCard.getId().toString())
                 .word(nextCard.getWord())
                 .meaning(nextCard.getMeaning())
                 .exampleSentence(nextCard.getExampleSentence())
@@ -217,24 +224,36 @@ public class VocabularyServiceImpl implements VocabularyService {
     @Override
     @Transactional
     public void submitAnswer(String userId, FlashcardAnswerRequest request) {
-        VocabCard card = vocabCardRepository.findById(request.getCardId())
+        // Chuyển đổi String → UUID
+        UUID userUuid = UUID.fromString(userId);
+        UUID cardUuid = UUID.fromString(request.getCardId());
+
+        VocabCard card = vocabCardRepository.findById(cardUuid)
                 .orElseThrow(() -> new ResourceNotFoundException("Card not found"));
-        UserVocabProgress progress = progressRepository.findByUserIdAndCardId(userId, card.getId())
-                .orElse(UserVocabProgress.builder()
-                        .id(new UserVocabProgressId(userId, card.getId()))
-                        .user(User.builder().id(userId).build())
-                        .card(card)
-                        .srsLevel((short) 0)
-                        .timesReviewed(0)
-                        .streakCorrect((short) 0)
-                        .easeFactor(2.5)
-                        .nextReviewAt(OffsetDateTime.now())
-                        .createdAt(OffsetDateTime.now())
-                        .updatedAt(OffsetDateTime.now())
-                        .build());
+
+        // Lấy hoặc tạo mới UserVocabProgress
+        UserVocabProgress progress = progressRepository.findByUserIdAndCardId(userUuid, cardUuid)
+                .orElseGet(() -> {
+                    // Tạo proxy User (không load toàn bộ)
+                    User userProxy = entityManager.getReference(User.class, userUuid);
+                    return UserVocabProgress.builder()
+                            .id(new UserVocabProgressId(userUuid, cardUuid))
+                            .user(userProxy)
+                            .card(card)
+                            .srsLevel((short) 0)
+                            .timesReviewed(0)
+                            .streakCorrect((short) 0)
+                            .easeFactor(2.5)
+                            .nextReviewAt(OffsetDateTime.now())
+                            .createdAt(OffsetDateTime.now())
+                            .updatedAt(OffsetDateTime.now())
+                            .build();
+                });
 
         int quality = request.getQuality();
         var srsResult = SrsPolicy.calculate(quality, 0, progress.getTimesReviewed(), progress.getEaseFactor());
+
+        // Cập nhật tiến độ
         progress.setTimesReviewed(srsResult.repetitions());
         progress.setSrsLevel((short) srsResult.repetitions());
         progress.setNextReviewAt(srsResult.nextReview());
@@ -245,21 +264,21 @@ public class VocabularyServiceImpl implements VocabularyService {
 
         if (quality >= 3) {
             progress.setStreakCorrect((short) (progress.getStreakCorrect() + 1));
-            // Add XP
+            // Cộng XP
             int xp = XpPolicy.getXpForQuality(quality);
-            profileRepository.addXpAndReview(userId, xp);
+            profileRepository.addXpAndReview(userUuid, xp);
             if (progress.getTimesReviewed() == 1) {
-                profileRepository.incrementTotalWordsLearned(userId);
+                profileRepository.incrementTotalWordsLearned(userUuid);
             }
         } else {
             progress.setStreakCorrect((short) 0);
         }
+
         progressRepository.save(progress);
     }
-
     // ========== Helpers ==========
     private VocabSet findSetByIdAndUser(String setId, String userId) {
-        VocabSet set = vocabSetRepository.findById(setId)
+        VocabSet set = vocabSetRepository.findById(UUID.fromString(setId))
                 .orElseThrow(() -> new ResourceNotFoundException("Set not found"));
         if (!set.getCreatedBy().getId().equals(userId)) {
             throw new BusinessRuleException("You don't have permission to modify this set");
@@ -268,7 +287,7 @@ public class VocabularyServiceImpl implements VocabularyService {
     }
 
     private VocabCard findCardByIdAndOwnership(String cardId, String userId) {
-        VocabCard card = vocabCardRepository.findById(cardId)
+        VocabCard card = vocabCardRepository.findById(UUID.fromString(cardId))
                 .orElseThrow(() -> new ResourceNotFoundException("Card not found"));
         if (!card.getVocabSet().getCreatedBy().getId().equals(userId)) {
             throw new BusinessRuleException("You don't have permission to modify this card");
