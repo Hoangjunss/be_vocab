@@ -1,6 +1,7 @@
 package com.toiec.demo.repository;
 
 import com.toiec.demo.entities.VocabCard;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -14,6 +15,7 @@ public interface VocabCardRepository extends JpaRepository<VocabCard, UUID> {
     List<VocabCard> findByVocabSetId(UUID setId);
     Optional<VocabCard> findByIdAndVocabSetId(UUID id, UUID setId);
     void deleteByIdAndVocabSetId(UUID id, UUID setId);
+    Page<VocabCard> findByVocabSetId(UUID setId, Pageable pageable);
 
     @Modifying
     @Transactional

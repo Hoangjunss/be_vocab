@@ -6,17 +6,20 @@ import com.toiec.demo.dtos.response.ApiResponse;
 import com.toiec.demo.dtos.response.FlashcardSessionResponse;
 import com.toiec.demo.dtos.response.VocabCardResponse;
 import com.toiec.demo.dtos.response.VocabSetResponse;
+import com.toiec.demo.exception.BusinessRuleException;
 import com.toiec.demo.security.CurrentUser;
 import com.toiec.demo.security.UserPrincipal;
 import com.toiec.demo.service.VocabularyService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/vocab")
@@ -50,6 +53,23 @@ public class VocabularyController {
     public ResponseEntity<ApiResponse<VocabSetResponse>> getSet(@PathVariable String setId,
                                                                 @CurrentUser UserPrincipal currentUser) {
         return ResponseEntity.ok(ApiResponse.success(vocabularyService.getSetById(setId, currentUser.getId())));
+    }
+    @GetMapping("/sets/{setId}/cards")
+    public ResponseEntity<ApiResponse<Page<VocabCardResponse>>> getCardsBySet(
+            @PathVariable String setId,  // đổi thành String
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @CurrentUser UserPrincipal currentUser) {
+        UUID setIdUuid;
+        try {
+            setIdUuid = UUID.fromString(setId);
+        } catch (IllegalArgumentException e) {
+            throw new BusinessRuleException("Invalid set ID: " + setId);
+        }
+        Pageable pageable = PageRequest.of(page, size);
+        UUID userId = currentUser != null ? UUID.fromString(currentUser.getId()) : null;
+        Page<VocabCardResponse> result = vocabularyService.getCardsBySet(setIdUuid, pageable, userId);
+        return ResponseEntity.ok(ApiResponse.success(result));
     }
 
     @GetMapping("/sets/public")
@@ -86,11 +106,7 @@ public class VocabularyController {
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 
-    @GetMapping("/sets/{setId}/cards")
-    public ResponseEntity<ApiResponse<List<VocabCardResponse>>> getCards(@PathVariable String setId,
-                                                                         @CurrentUser UserPrincipal currentUser) {
-        return ResponseEntity.ok(ApiResponse.success(vocabularyService.getCardsBySet(setId, currentUser.getId())));
-    }
+
 
     // Import
     @PostMapping("/sets/{setId}/import")

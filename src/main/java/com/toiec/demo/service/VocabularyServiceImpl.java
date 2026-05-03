@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,7 @@ import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -275,6 +277,23 @@ public class VocabularyServiceImpl implements VocabularyService {
         }
 
         progressRepository.save(progress);
+    }
+    @Override
+    public Page<VocabCardResponse> getCardsBySet(UUID setId, Pageable pageable, UUID userId) {
+        Page<VocabCard> cardsPage = vocabCardRepository.findByVocabSetId(setId, pageable);
+        if (userId == null) {
+            // Chưa đăng nhập: trả về tất cả thẻ
+            return cardsPage.map(vocabCardMapper::toResponse);
+        } else {
+            // Đã đăng nhập: lọc bỏ các thẻ đã học
+            Set<UUID> learnedCardIds = progressRepository.findLearnedCardIdsByUserId(userId);
+            List<VocabCardResponse> filtered = cardsPage.getContent().stream()
+                    .filter(card -> !learnedCardIds.contains(card.getId()))
+                    .map(vocabCardMapper::toResponse)
+                    .collect(Collectors.toList());
+            // Tạo Page mới từ danh sách đã lọc
+            return new PageImpl<>(filtered, pageable, cardsPage.getTotalElements());
+        }
     }
     // ========== Helpers ==========
     private VocabSet findSetByIdAndUser(String setId, String userId) {

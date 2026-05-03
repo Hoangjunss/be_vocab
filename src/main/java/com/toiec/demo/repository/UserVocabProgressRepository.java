@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 public interface UserVocabProgressRepository extends JpaRepository<UserVocabProgress, UserVocabProgressId> {
@@ -32,4 +33,6 @@ public interface UserVocabProgressRepository extends JpaRepository<UserVocabProg
     @Transactional
     @Query("UPDATE UserVocabProgress p SET p.srsLevel = p.srsLevel + 1 WHERE p.id.userId = :userId AND p.id.cardId = :cardId")
     void incrementSrsLevel(@Param("userId") UUID userId, @Param("cardId") UUID cardId);
+    @Query("SELECT p.id.cardId FROM UserVocabProgress p WHERE p.id.userId = :userId AND p.srsLevel >= 1")
+    Set<UUID> findLearnedCardIdsByUserId(@Param("userId") UUID userId);
 }

@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
+import java.util.UUID;
 
 public interface VocabularyService {
     // Set operations
@@ -30,4 +31,5 @@ public interface VocabularyService {
     // Flashcard learning
     FlashcardSessionResponse getNextFlashcard(String userId, String setId);
     void submitAnswer(String userId, FlashcardAnswerRequest request);
+    Page<VocabCardResponse> getCardsBySet(UUID setId, Pageable pageable, UUID userId);
 }
