@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "user_profiles")
@@ -16,7 +17,7 @@ import java.time.OffsetDateTime;
 public class UserProfile {
     @Id
     @Column(name = "user_id")
-    private String userId;
+    private UUID userId;
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId

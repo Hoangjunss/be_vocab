@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "groups")
@@ -20,7 +21,7 @@ public class Group extends BaseEntity {
     private String description;
 
     @Column(name = "created_by", nullable = false)
-    private String createdBy;
+    private UUID createdBy;
 
     @Column(name = "is_public")
     private boolean isPublic = false;
