@@ -12,7 +12,7 @@ public interface VocabSetRepository extends JpaRepository<VocabSet, UUID>, JpaSp
     Page<VocabSet> findByIsPublicTrue(Pageable pageable);
 
     // Thêm method này để tìm bộ từ public theo topic (không phân biệt hoa thường)
-    Page<VocabSet> findByIsPublicTrueAndTopicContainingIgnoreCase(String topic, Pageable pageable);
+    Page<VocabSet> findByIsPublicTrueAndGroup_NameContainingIgnoreCase(String groupName, Pageable pageable);
 
     Page<VocabSet> findByCreatedById(UUID userId, Pageable pageable);
     Optional<VocabSet> findByIdAndCreatedById(UUID id, UUID userId);

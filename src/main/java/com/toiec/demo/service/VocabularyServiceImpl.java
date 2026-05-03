@@ -95,7 +95,7 @@ public class VocabularyServiceImpl implements VocabularyService {
     public Page<VocabSetResponse> getPublicSets(String topic, Pageable pageable) {
         Page<VocabSet> sets;
         if (topic != null && !topic.isEmpty()) {
-            sets = vocabSetRepository.findByIsPublicTrueAndTopicContainingIgnoreCase(topic, pageable); // need to add method
+            sets = vocabSetRepository.findByIsPublicTrueAndGroup_NameContainingIgnoreCase(topic, pageable); // need to add method
         } else {
             sets = vocabSetRepository.findByIsPublicTrue(pageable);
         }

@@ -17,7 +17,6 @@ public class VocabSetResponse {
     private String createdByName;
     private String groupId;
     private String groupName;
-    private String topic;
     private Integer difficultyLevel;
     private Integer wordCount;
     private String imageUrl;
