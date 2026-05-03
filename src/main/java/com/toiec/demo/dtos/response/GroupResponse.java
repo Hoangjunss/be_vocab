@@ -18,4 +18,5 @@ public class GroupResponse {
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
     private List<VocabSetResponse> vocabSets;  // optional
+    private Integer vocabSetCount;
 }

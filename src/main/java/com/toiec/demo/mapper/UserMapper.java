@@ -20,7 +20,7 @@ public interface UserMapper {
     @Mapping(target = "profile", ignore = true)
     @Mapping(target = "vocabProgresses", ignore = true)
     @Mapping(target = "ownedSets", ignore = true)
-    @Mapping(target = "active", constant = "true")
+    @Mapping(target = "isActive", ignore = true)
     @Mapping(source = "password", target = "passwordHash")
     @Mapping(target = "role", constant = "USER")
     User toEntity(RegisterRequest request);

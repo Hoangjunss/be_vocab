@@ -8,14 +8,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-public interface VocabCardRepository extends JpaRepository<VocabCard, String> {
-    List<VocabCard> findByVocabSetId(String setId);
-    Optional<VocabCard> findByIdAndVocabSetId(String id, String setId);
-    void deleteByIdAndVocabSetId(String id, String setId);
+public interface VocabCardRepository extends JpaRepository<VocabCard, UUID> {
+    List<VocabCard> findByVocabSetId(UUID setId);
+    Optional<VocabCard> findByIdAndVocabSetId(UUID id, UUID setId);
+    void deleteByIdAndVocabSetId(UUID id, UUID setId);
 
     @Modifying
     @Transactional
     @Query("DELETE FROM VocabCard c WHERE c.vocabSet.id = :setId")
-    void deleteAllByVocabSetId(String setId);
+    void deleteAllByVocabSetId(UUID setId);
 }

@@ -17,6 +17,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -38,7 +40,7 @@ public class UserServiceImpl implements UserService {
         user = userRepository.save(user);
 
         UserProfile profile = UserProfile.builder()
-                .userId(user.getId())
+                .userId(UUID.fromString(user.getId().toString()))
                 .user(user)
                 .build();
         profileRepository.save(profile);
@@ -62,7 +64,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserProfileResponse getProfile(String userId) {
-        UserProfile profile = profileRepository.findById(userId)
+        UserProfile profile = profileRepository.findById(UUID.fromString(userId))
                 .orElseThrow(() -> new BusinessRuleException("Profile not found"));
         return userMapper.toProfileResponse(profile);
     }

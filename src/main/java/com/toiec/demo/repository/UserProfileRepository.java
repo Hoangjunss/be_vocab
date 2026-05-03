@@ -6,14 +6,16 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
-public interface UserProfileRepository extends JpaRepository<UserProfile, String> {
+import java.util.UUID;
+
+public interface UserProfileRepository extends JpaRepository<UserProfile, UUID> {
     @Modifying
     @Transactional
     @Query("UPDATE UserProfile p SET p.xp = p.xp + :xp, p.totalFlashcardReviews = p.totalFlashcardReviews + 1, p.updatedAt = CURRENT_TIMESTAMP WHERE p.userId = :userId")
-    void addXpAndReview(String userId, int xp);
+    void addXpAndReview(UUID userId, int xp);
 
     @Modifying
     @Transactional
     @Query("UPDATE UserProfile p SET p.totalWordsLearned = p.totalWordsLearned + 1 WHERE p.userId = :userId")
-    void incrementTotalWordsLearned(String userId);
+    void incrementTotalWordsLearned(UUID userId);
 }
