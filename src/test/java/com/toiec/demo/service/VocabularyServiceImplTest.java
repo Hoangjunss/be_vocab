@@ -114,6 +114,7 @@ class VocabularyServiceImplTest {
                 .hasMessage("Group not found");
     }
 
+    //  Lỗi so sánh UUID
     @Test
     void updateSet_WhenOwner_ShouldUpdate() {
         com.toiec.demo.dtos.request.UpdateVocabSetRequest request = new com.toiec.demo.dtos.request.UpdateVocabSetRequest();
@@ -142,6 +143,7 @@ class VocabularyServiceImplTest {
                 .hasMessage("You don't have permission to modify this set");
     }
 
+    //  Lỗi so sánh UUID
     @Test
     void deleteSet_WhenOwner_ShouldDelete() {
         when(vocabSetRepository.findById(setId)).thenReturn(Optional.of(mockSet));
@@ -151,6 +153,7 @@ class VocabularyServiceImplTest {
         verify(vocabSetRepository).delete(mockSet);
     }
 
+    //  Lỗi so sánh UUID
     @Test
     void addCard_WhenCreator_ShouldAddCard() {
         CreateVocabCardRequest request = new CreateVocabCardRequest();
@@ -256,6 +259,7 @@ class VocabularyServiceImplTest {
         assertThat(response.getWord()).isEqualTo("due-word");
     }
 
+    //  Lỗi so sánh UUID
     @Test
     void importCardsFromFile_WhenInvalidFile_ShouldThrowException() {
         MultipartFile file = mock(MultipartFile.class);
