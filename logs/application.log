@@ -1,0 +1,46 @@
+2026-05-05 12:37:21.260 [restartedMain] INFO  com.toiec.demo.DemoApplication - Starting DemoApplication using Java 23.0.1 with PID 21392 (D:\be_vocab\target\classes started by CHUNG in D:\be_vocab)
+2026-05-05 12:37:21.270 [restartedMain] DEBUG com.toiec.demo.DemoApplication - Running with Spring Boot v3.2.5, Spring v6.1.6
+2026-05-05 12:37:21.270 [restartedMain] INFO  com.toiec.demo.DemoApplication - No active profile set, falling back to 1 default profile: "default"
+2026-05-05 12:37:28.117 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-05-05 12:37:28.527 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@5d460f62
+2026-05-05 12:37:28.530 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-05-05 12:37:28.622 [restartedMain] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-05 12:37:32.943 [restartedMain] DEBUG c.t.d.filter.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2026-05-05 12:37:34.610 [restartedMain] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-05 12:37:38.470 [restartedMain] INFO  com.toiec.demo.DemoApplication - Started DemoApplication in 18.109 seconds (process running for 19.38)
+2026-05-05 12:38:33.800 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-05-05 12:38:33.806 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-05-05 12:38:38.561 [restartedMain] INFO  com.toiec.demo.DemoApplication - Starting DemoApplication using Java 23.0.1 with PID 28836 (D:\be_vocab\target\classes started by CHUNG in D:\be_vocab)
+2026-05-05 12:38:38.563 [restartedMain] DEBUG com.toiec.demo.DemoApplication - Running with Spring Boot v3.2.5, Spring v6.1.6
+2026-05-05 12:38:38.564 [restartedMain] INFO  com.toiec.demo.DemoApplication - No active profile set, falling back to 1 default profile: "default"
+2026-05-05 12:38:44.313 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-05-05 12:38:44.642 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@4101d66d
+2026-05-05 12:38:44.644 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-05-05 12:38:44.701 [restartedMain] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-05 12:38:47.949 [restartedMain] DEBUG c.t.d.filter.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2026-05-05 12:38:48.969 [restartedMain] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-05 12:38:52.698 [restartedMain] INFO  com.toiec.demo.DemoApplication - Started DemoApplication in 15.009 seconds (process running for 16.074)
+2026-05-05 12:39:15.596 [http-nio-8080-exec-2] INFO  c.toiec.demo.service.UserServiceImpl - === START loginWithGoogle ===
+2026-05-05 12:39:15.596 [http-nio-8080-exec-2] INFO  c.toiec.demo.service.UserServiceImpl - idToken length: 1214
+2026-05-05 12:39:15.596 [http-nio-8080-exec-2] INFO  c.toiec.demo.service.UserServiceImpl - Creating GoogleIdTokenVerifier...
+2026-05-05 12:39:15.664 [http-nio-8080-exec-2] INFO  c.toiec.demo.service.UserServiceImpl - Verifier created, googleClientId: 64251716543-8uu8euqmt4gm0hsnhufp9vj3oojtdndb.apps.googleusercontent.com
+2026-05-05 12:39:18.072 [http-nio-8080-exec-2] INFO  c.toiec.demo.service.UserServiceImpl - googleToken after verify: GoogleIdToken{header={"alg":"RS256","kid":"8076ddbab415556e169154c6a4a0bdbd4469b79c","typ":"JWT"}, payload={"aud":"64251716543-8uu8euqmt4gm0hsnhufp9vj3oojtdndb.apps.googleusercontent.com","azp":"64251716543-8uu8euqmt4gm0hsnhufp9vj3oojtdndb.apps.googleusercontent.com","email":"vuhoangchung2020@gmail.com","email_verified":true,"exp":1777963154,"iat":1777959554,"iss":"https://accounts.google.com","jti":"7f79fcdeda4875c04068ca03b149354a3bbdf3d3","nbf":1777959254,"sub":"103110150494401140651","name":"06.Vũ Hoàng Chung","picture":"https://lh3.googleusercontent.com/a/ACg8ocJIHxwVrmXzHuC_RJ6kx398yjM3TZv4lS4HURXR3F3wRljkz0o=s96-c","given_name":"06.Vũ","family_name":"Hoàng Chung"}}
+2026-05-05 12:39:18.083 [http-nio-8080-exec-2] INFO  c.toiec.demo.service.UserServiceImpl - payload - email: vuhoangchung2020@gmail.com, name: 06.Vũ Hoàng Chung, avatarUrl: https://lh3.googleusercontent.com/a/ACg8ocJIHxwVrmXzHuC_RJ6kx398yjM3TZv4lS4HURXR3F3wRljkz0o=s96-c
+2026-05-05 12:39:18.577 [http-nio-8080-exec-2] INFO  c.toiec.demo.service.UserServiceImpl - User found/created, id: 2d7505e6-ccb7-4d13-a894-0e91c55610e7
+2026-05-05 12:39:18.635 [http-nio-8080-exec-2] INFO  c.toiec.demo.service.UserServiceImpl - Tokens generated
+2026-05-05 12:46:36.368 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-05-05 12:46:36.385 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-05-05 13:00:24.194 [restartedMain] INFO  com.toiec.demo.DemoApplication - Starting DemoApplication using Java 23.0.1 with PID 43616 (D:\be_vocab\target\classes started by CHUNG in D:\be_vocab)
+2026-05-05 13:00:24.195 [restartedMain] DEBUG com.toiec.demo.DemoApplication - Running with Spring Boot v3.2.5, Spring v6.1.6
+2026-05-05 13:00:24.196 [restartedMain] INFO  com.toiec.demo.DemoApplication - No active profile set, falling back to 1 default profile: "default"
+2026-05-05 13:00:30.153 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-05-05 13:00:30.433 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@352f0d7b
+2026-05-05 13:00:30.436 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-05-05 13:00:30.500 [restartedMain] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-05 13:00:33.410 [restartedMain] DEBUG c.t.d.filter.JwtAuthenticationFilter - Filter 'jwtAuthenticationFilter' configured for use
+2026-05-05 13:00:34.457 [restartedMain] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-05 13:00:36.958 [restartedMain] INFO  com.toiec.demo.DemoApplication - Started DemoApplication in 13.603 seconds (process running for 14.713)
+2026-05-05 15:24:39.946 [HikariPool-1 housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=2h16m39s272ms936µs400ns).
+2026-05-05 16:56:49.728 [HikariPool-1 housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1h31m13s982ms754µs).
+2026-05-05 16:57:40.177 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-05-05 16:57:40.189 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.

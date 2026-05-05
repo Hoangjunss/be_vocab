@@ -16,6 +16,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import org.springframework.beans.factory.annotation.Value;
+import java.util.Collections;
 
 import java.util.UUID;
 
@@ -28,7 +34,69 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider tokenProvider;
     private final UserMapper userMapper;
+    @Value("${google.client.id}")
+    private String googleClientId;
 
+    @Override
+    @Transactional
+    public AuthResponse loginWithGoogle(String idToken) {
+        log.info("=== START loginWithGoogle ===");
+        log.info("idToken length: {}", idToken != null ? idToken.length() : 0);
+        if (idToken == null) log.warn("idToken is null!");
+        try {
+            log.info("Creating GoogleIdTokenVerifier...");
+            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
+                    new NetHttpTransport(),
+                    new JacksonFactory())
+                    .setAudience(Collections.singletonList(googleClientId))
+                    .build();
+            log.info("Verifier created, googleClientId: {}", googleClientId);
+
+            GoogleIdToken googleToken = verifier.verify(idToken);
+            log.info("googleToken after verify: {}", googleToken);
+            if (googleToken == null) {
+                log.error("googleToken is null, verification failed");
+                throw new BusinessRuleException("Invalid Google token");
+            }
+            GoogleIdToken.Payload payload = googleToken.getPayload();
+            String email = payload.getEmail();
+            String name = (String) payload.get("name");
+            String avatarUrl = (String) payload.get("picture");
+            log.info("payload - email: {}, name: {}, avatarUrl: {}", email, name, avatarUrl);
+
+            User user = userRepository.findByEmail(email).orElseGet(() -> {
+                log.info("User not found, creating new...");
+                User newUser = User.builder()
+                        .email(email)
+                        .fullName(name)
+                        .avatarUrl(avatarUrl)
+                        .passwordHash("")
+                        .role("USER")
+                        .isActive(true)
+                        .build();
+                log.info("newUser before save, id: {}", newUser.getId());
+                User savedUser = userRepository.save(newUser);
+                log.info("savedUser after save, id: {}", savedUser.getId());
+                if (savedUser.getId() == null) log.error("savedUser.getId() is null!");
+                UserProfile profile = UserProfile.builder()
+                        .user(savedUser)
+                        .build();
+                log.info("profile created, userId: {}", profile.getUserId());
+                UserProfile savedProfile = profileRepository.save(profile);
+                log.info("profile saved, userId: {}", savedProfile.getUserId());
+                return savedUser;
+            });
+            log.info("User found/created, id: {}", user.getId());
+
+            String accessToken = tokenProvider.generateAccessToken(user);
+            String refreshToken = tokenProvider.generateRefreshToken(user);
+            log.info("Tokens generated");
+            return new AuthResponse(accessToken, refreshToken, "Bearer");
+        } catch (Exception e) {
+            log.error("Exception: ", e);
+            throw new BusinessRuleException("Google authentication failed: " + e.getMessage());
+        }
+    }
     @Override
     @Transactional
     public AuthResponse register(RegisterRequest request) {
