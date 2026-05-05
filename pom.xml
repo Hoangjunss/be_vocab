@@ -112,12 +112,7 @@
 			<version>${poi.version}</version>
 		</dependency>
 
-		<!-- Rate limiting -->
-		<dependency>
-			<groupId>com.bucket4j</groupId>
-			<artifactId>bucket4j-core</artifactId>
-			<version>8.7.0</version>
-		</dependency>
+
 
 		<!-- API documentation -->
 		<dependency>
@@ -167,6 +162,20 @@
 			<artifactId>google-api-client</artifactId>
 			<version>2.2.0</version>
 		</dependency>
+		<dependency>
+			<groupId>com.bucket4j</groupId>
+			<artifactId>bucket4j-core</artifactId>
+			<version>8.10.1</version>
+		</dependency>
+
+		<!-- Caffeine cache (đã có sẵn trong Spring Boot, chỉ cần thêm nếu chưa) -->
+		<dependency>
+			<groupId>com.github.ben-manes.caffeine</groupId>
+			<artifactId>caffeine</artifactId>
+		</dependency>
+
+
+
 		<!-- Jackson 2 integration for Google HTTP Client -->
 		<dependency>
 			<groupId>com.google.http-client</groupId>
