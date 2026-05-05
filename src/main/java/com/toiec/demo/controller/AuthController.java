@@ -1,5 +1,6 @@
 package com.toiec.demo.controller;
 
+import com.toiec.demo.dtos.request.GoogleLoginRequest;
 import com.toiec.demo.dtos.request.LoginRequest;
 import com.toiec.demo.dtos.request.RegisterRequest;
 import com.toiec.demo.dtos.response.ApiResponse;
@@ -15,6 +16,7 @@ import com.toiec.demo.security.UserPrincipal;
 
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
 public class AuthController {
     private final UserService userService;
@@ -27,6 +29,10 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(ApiResponse.success(userService.login(request)));
+    }
+    @PostMapping("/google")
+    public ResponseEntity<ApiResponse<AuthResponse>> googleLogin(@Valid @RequestBody GoogleLoginRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(userService.loginWithGoogle(request.getIdToken())));
     }
 
     @GetMapping("/me")

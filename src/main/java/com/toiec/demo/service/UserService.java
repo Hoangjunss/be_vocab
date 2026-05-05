@@ -10,4 +10,5 @@ public interface UserService {
     AuthResponse login(LoginRequest request);
     UserProfileResponse getProfile(String userId);
     void logout(String token);
+    AuthResponse loginWithGoogle(String idToken);
 }
